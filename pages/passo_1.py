@@ -19,7 +19,6 @@ COLONY_RADIOUS_COLOR = 1/2
 GRID_CIRCLE = 60
 
 
-# Função para aplicar o zoom na imagem
 def zoom_image(img_array, zoom_factor=2):
     original_radius_x, original_radius_y = img_array.shape[1] // 2, img_array.shape[0] // 2
     x_chuck_desloc = st.session_state['x_factor_zoom']
@@ -37,11 +36,9 @@ def zoom_image(img_array, zoom_factor=2):
     logger.info(f"Many zoom chunks:  {many_zoom_chunks()}")
     logger.info(f"Zoom: {zoom_factor}. Center: ({center_x}, {center_y}). Radius: ({radius_x}, {radius_y})")
 
-    # Cortar a região de interesse
     cropped_img = img_array[center_y - radius_y:center_y + radius_y, center_x - radius_x:center_x + radius_x]
 
     st.session_state['cropped_img_array'] = cropped_img
-    # Redimensionar de volta para o tamanho original
 
     cropped_pil_img = Image.fromarray(cropped_img)
     zoomed_pil_img = cropped_pil_img.resize((img_array.shape[1], img_array.shape[0]))
@@ -89,7 +86,6 @@ def change_zoom():
         logger.info(f"y_factor_zoom: {st.session_state['y_factor_zoom']}; max_deslocation: {max_deslocation('+')}")
 
 
-# Botão para baixar a imagem com zoom
 def get_image_download_link(img, filename, text):
     buffered = BytesIO()
     img.save(buffered, format="JPEG")
@@ -108,10 +104,8 @@ def zoom():
         st.session_state['zoom_circle_radius'] = 0
     f_circle_radius = 0
 
-    # Carregar a imagem
     img = Image.open(st.session_state['img_path'])
 
-    # Converter para array do NumPy para processamento
     st.session_state['img_array'] = np.array(img)
 
     if 'cropped_img_array' not in st.session_state:
@@ -179,7 +173,6 @@ def zoom():
 
     zoomed_img = zoom_image(st.session_state['img_array'], st.session_state['zoom_factor'])
 
-    # Converter a imagem com zoom para um objeto Image
     zoomed_img_pil = Image.fromarray(zoomed_img.astype('uint8'), 'RGB')
 
     with tab_circle:
@@ -210,15 +203,12 @@ def zoom():
         logger.info(f"{p_circle=}")
         logger.info(f"{st.session_state['cropped_img_array'].shape=}")
 
-        # proporção 0.0-1.0 do raio do círculo em relação à imagem clipada
         circle_proportion = (p_circle[2] - p_circle[0]) / zoomed_img_pil.size[0] / st.session_state['zoom_factor']
 
-        # raio do círculo em pixels
         radious = int(st.session_state['img_array'].shape[1] * circle_proportion // 2)
 
         draw.ellipse(xy=p_circle, fill=None, outline=(255, 0, 0), width=5)
 
-        #st.text(f"Raio = {radious} pixels.")
 
         if radious < 8:
             st.error("Pequeno demais! Confira:\n-> Circular corretamente\n-> Ter imagem de maior resolução\n")
@@ -271,7 +261,6 @@ def zoom():
 
     col1.image(zoomed_img_pil)
 
-    # Criar e mostrar o link de download
     col1.markdown(get_image_download_link(zoomed_img_pil, "imagem_zoomada.jpg", "Baixar imagem com zoom"),
                   unsafe_allow_html=True)
 
@@ -303,7 +292,6 @@ if col3.button('Definir círculo como "Colonia Grande"', use_container_width=Tru
 if 'petri_centro' in st.session_state and 'raio_min' in st.session_state and 'raio_max' in st.session_state:
     if st.button("Próximo passo", use_container_width=True):
 
-        # calcular a média da cor da colônia
         st.switch_page("pages/passo_2.py")
 
 
