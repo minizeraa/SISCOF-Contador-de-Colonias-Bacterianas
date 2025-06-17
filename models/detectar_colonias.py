@@ -14,13 +14,10 @@ def detectar_colonias(img, raio_min, raio_max, sigma, max) -> list[Colonia]:
 
   edges = canny(im, sigma=sigma)
 
-    # Definir os raios possíveis para as colônias
   hough_radii = np.arange(raio_min, raio_max, 2)
 
-  # Realizar a transformação de Hough
   hough_res = hough_circle(edges, hough_radii)
 
-  # Selecionar os picos mais proeminentes
   accums, cx, cy, radii = hough_circle_peaks(
       hough_res, hough_radii, min_xdistance=raio_min, min_ydistance=raio_min, total_num_peaks=max)
 
